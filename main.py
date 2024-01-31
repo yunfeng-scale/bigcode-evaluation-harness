@@ -1,6 +1,6 @@
-import os
 import fnmatch
 import json
+import os
 import warnings
 
 import datasets
@@ -210,6 +210,17 @@ def parse_args():
         action="store_true",
         help="Don't run generation but benchmark groundtruth (useful for debugging)",
     )
+    parser.add_argument(
+        "--save_prompts_only",
+        action="store_true",
+        help="Whether to only store prompts. If provided generation and evalution is skipped",
+    )
+    parser.add_argument(
+        "--save_prompts_path",
+        type=str,
+        default="prompts.json",
+        help="Path to store prompts",
+    )
     return parser.parse_args()
 
 
@@ -377,7 +388,15 @@ def main():
                     # where list[i] = generated codes or empty
                     intermediate_generations = json.load(f_in)
 
-            if args.generation_only:
+            if args.save_prompts_only:
+                if accelerator.is_main_process:
+                    print("store prompts mode only")
+                    prompts, _ = evaluator.generate_text(
+                        task, intermediate_generations=intermediate_generations
+                    )
+                    with open(args.save_prompts_path, "w") as fp:
+                        json.dump(prompts, fp)
+            elif args.generation_only:
                 if accelerator.is_main_process:
                     print("generation mode only")
                 generations, references = evaluator.generate_text(
