@@ -2,9 +2,7 @@ import inspect
 import json
 import os
 import warnings
-
 from typing import List
-
 
 from bigcode_eval import tasks
 from bigcode_eval.generation import parallel_generations
@@ -79,6 +77,9 @@ class Evaluator:
             intermediate_generations=curr_generations,
             intermediate_save_generations_path=intermediate_save_generations_path,
         )
+
+        if self.args.save_prompts_only:
+            return generations, None
 
         if len(generations[0]) > self.args.n_samples:
             generations = [l[: self.args.n_samples] for l in generations]

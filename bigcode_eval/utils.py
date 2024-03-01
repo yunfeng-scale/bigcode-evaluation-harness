@@ -35,6 +35,7 @@ class TokenizedDataset(IterableDataset):
         prefix="",
         has_encoder=False,
         instruction_tokens=None,
+        prompt_output_side_channel=None,
     ):
         self.task = task
         self.dataset = dataset
@@ -47,6 +48,7 @@ class TokenizedDataset(IterableDataset):
         self.prefix = prefix
         self.has_encoder = has_encoder
         self.instruction_tokens = instruction_tokens
+        self.prompt_output_side_channel = prompt_output_side_channel
 
     def __iter__(self):
         prompts = []
@@ -123,6 +125,8 @@ class TokenizedDataset(IterableDataset):
 
         for sample in range(self.n_tasks):
             for _ in range(self.n_copies):
+                if self.prompt_output_side_channel is not None:
+                    self.prompt_output_side_channel.append(prompts[sample])
                 if self.has_encoder:
                     yield {
                         "ids": outputs.input_ids[sample],

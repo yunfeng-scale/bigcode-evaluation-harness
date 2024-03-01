@@ -1,6 +1,5 @@
 import json
 from math import ceil
-
 from typing import List, Optional
 
 from accelerate.utils import set_seed
@@ -108,6 +107,8 @@ def parallel_generations(
         print(f"number of problems for this task is {n_tasks}")
     n_copies = ceil(args.n_samples / args.batch_size)
 
+    prompt_output_side_channel = []
+
     ds_tokenized = TokenizedDataset(
         task,
         dataset,
@@ -120,7 +121,13 @@ def parallel_generations(
         prefix=args.prefix,
         has_encoder=args.modeltype == "seq2seq",
         instruction_tokens=instruction_tokens,
+        prompt_output_side_channel=prompt_output_side_channel,
     )
+
+    if args.save_prompts_only:
+        for step, batch in enumerate(ds_tokenized):
+            pass
+        return prompt_output_side_channel
 
     # do not confuse args.batch_size, which is actually the num_return_sequences
     ds_loader = DataLoader(ds_tokenized, batch_size=1)

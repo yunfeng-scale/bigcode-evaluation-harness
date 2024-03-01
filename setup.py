@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("README.md") as readme_file:
     readme = readme_file.read()
@@ -28,6 +28,7 @@ ds1000_requirements = [
 ]
 
 setup(
+    name='bigcode-eval',
     description="A framework for the evaluation of autoregressive code generation language models.",
     long_description=readme,
     license="Apache 2.0",
