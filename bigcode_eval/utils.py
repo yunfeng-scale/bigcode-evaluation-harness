@@ -1,6 +1,7 @@
 import json
 import math
 import re
+import sys
 import warnings
 from collections import defaultdict
 from typing import List, Optional
@@ -254,6 +255,7 @@ def complete_code(
         total=math.ceil(
             n_tasks * dataloader.dataset.n_copies / accelerator.num_processes
         ),
+        file=sys.stdout,
     ):
         with torch.no_grad():
             if task.stop_words:
